@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Wave Interference with Center Curve</title>
+    <style>
+    body{
+      text-align: center;
+    }
+        canvas {
+            border: 1px solid black;
+        }
+        footer {
+            text-align: center;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+  <h3>Superposition of two waves</h3>
+    <canvas id="canvas" width="800" height="400"></canvas>
+    <footer style="color:darkgray">Animated by Shashwata - HTML5</footer>
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+
+        const width = canvas.width;
+        const height = canvas.height;
+        const centerX = width / 2;
+        const centerY = height / 2;
+
+        let time = 0;
+        const speed = 0.1;
+        const amplitude = 40;
+        const frequency = 0.1;
+
+        function drawWave(startX, startY, endX, endY, phaseShift, color) {
+            ctx.beginPath();
+            ctx.moveTo(startX, startY);
+            for (let x = 0; x <= width; x++) {
+                const y = Math.sin((x + time) * frequency + phaseShift) * amplitude;
+                const xPos = startX + (endX - startX) * (x / width);
+                const yPos = startY + (endY - startY) * (x / width) + y;
+                ctx.lineTo(xPos, yPos);
+            }
+            ctx.strokeStyle = color;
+            ctx.stroke();
+        }
+
+        function drawCenterCurve() {
+            ctx.beginPath();
+            ctx.moveTo(0, centerY);
+            for (let x = 0; x <= width; x++) {
+                const y1 = Math.sin((x + time) * frequency) * amplitude;
+                const y2 = Math.sin((x - time) * frequency) * amplitude;
+                const yTotal = (y1 + y2) / 2; // Average the amplitudes for the center curve
+                ctx.lineTo(x, centerY + yTotal);
+            }
+            ctx.strokeStyle = 'green'; // Changed color to green
+            ctx.stroke();
+        }
+
+        function draw() {
+            ctx.clearRect(0, 0, width, height);
+
+            // Draw two waves moving towards each other
+            drawWave(0, centerY, width, centerY, 0, 'red');
+            drawWave(width, centerY, 0, centerY, 0, 'blue');
+
+            // Draw the center curve showing constructive and destructive interference
+            drawCenterCurve();
+
+            // Draw the center line tracing the crest
+            ctx.beginPath();
+            ctx.moveTo(centerX, centerY);
+            const crestY = centerY + Math.sin(time * frequency) * amplitude;
+            ctx.lineTo(centerX, crestY);
+            ctx.strokeStyle = 'green';
+            ctx.stroke();
+
+            time += speed;
+            requestAnimationFrame(draw);
+        }
+
+        draw();
+    </script>
+</body>
+</html>
